@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYDRO-LAB MONITOR v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #10101e;
+    --yellow: #ffcc00;
+    --green: #39ff14;
+    --pink: #ff00ff;
+    --cyan: #00ffff;
+    --white: #ffffff;
+    --orange: #ff8c00;
+    --target-green: #1db954;
+    --font-base: 20px; /* Increased base font size */
+  }
+
+  html {
+    font-size: var(--font-base);
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'VT323', monospace;
+    text-transform: uppercase;
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Full screen dashboard mode */
+  .monitor-frame {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+  }
+  
+  .monitor-inner { 
+    padding: 2rem; 
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1;
+    gap: 2rem; 
+    position: relative; 
+    z-index: 10; 
+  }
+
+  /* HEADER */
+  .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--yellow); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem; }
+  .header h1 { font-size: 3rem; color: var(--yellow); line-height: 0.8; }
+  .header h1 span { font-size: 1.5rem; margin-left: 0.5rem; opacity: 0.8; }
+  
+  .header-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+  .status { font-size: 1.2rem; color: var(--yellow); letter-spacing: 0.05em; }
+  .status span { animation: pulse 1.5s ease-in-out infinite; font-weight: bold; }
+
+  .time-btns { display: flex; gap: 0.5rem; }
+  .time-btn {
+    padding: 0.25rem 1rem;
+    border: 2px solid var(--yellow);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: 'VT323', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    color: var(--yellow);
+    transition: all 0.15s;
+  }
+  .time-btn:hover { background: rgba(255, 204, 0, 0.2); }
+  .time-btn.active { background: var(--yellow); color: var(--bg); }
+
+  /* TOP ROW */
+  .top-row { display: grid; grid-template-columns: 1fr 2.5fr; gap: 2rem; min-height: 18rem; }
+  .ambient-section { display: flex; flex-direction: column; }
+  .ambient-section h2 { font-size: 1.25rem; color: var(--yellow); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+  .gauges-row { display: flex; justify-content: space-around; align-items: center; flex-grow: 1; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
+
+  /* STATION PANEL */
+  .stations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; flex-grow: 1; }
+  
+  .station-panel {
+    border: 2px solid;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: 0.5rem;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .station-label {
+    position: absolute;
+    top: -1.1rem;
+    left: 1.5rem;
+    padding: 0.15rem 1rem;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg);
+    border: 2px solid;
+    border-radius: 0.375rem;
+    font-weight: bold;
+  }
+  .station-body { margin-top: 0.5rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; }
+
+  /* MINI BAR */
+  .mini-bar-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; }
+  .mini-bar-label { width: 8rem; flex-shrink: 0; }
+  .mini-bar-value { width: 4.5rem; text-align: right; font-weight: bold; }
+  .mini-bar-track {
+    flex-grow: 1;
+    margin: 0 1rem;
+    height: 1.25rem;
+    background: #0a0a14;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 9999px;
+    position: relative;
+    overflow: visible;
+    align-self: center;
+  }
+  .mini-bar-optimal { position: absolute; height: 100%; background: rgba(29,185,84,0.1); pointer-events: none; border-radius: 2px; z-index: 1; }
+  .mini-bar-optimal-border {
+    position: absolute; top: -4px; bottom: -4px;
+    border: 2px solid var(--target-green);
+    border-radius: 4px; pointer-events: none; z-index: 20;
+    box-shadow: 0 0 6px rgba(29,185,84,0.4); background: transparent;
+  }
+  .mini-bar-fill-wrap { position: absolute; inset: 0; overflow: hidden; border-radius: 9999px; z-index: 0; }
+  .mini-bar-fill { height: 100%; transition: width 0.5s; }
+
+  /* GAUGE */
+  .gauge-container { display: flex; flex-direction: column; align-items: center; }
+  .gauge-wrap { position: relative; width: 11rem; height: 11rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .gauge-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
+  .gauge-value { position: absolute; bottom: 0.5rem; display: flex; flex-direction: column; align-items: center; font-size: 2.25rem; font-weight: bold; line-height: 1; }
+  .gauge-label { font-size: 1.1rem; margin-top: 0.5rem; font-weight: bold; letter-spacing: 0.05em; }
+
+  /* BAR GAUGE */
+  .bar-gauge-outer {
+    position: relative; width: 4.5rem; height: 8.5rem;
+    border: 2px solid; border-radius: 3px; padding: 4px;
+    margin-bottom: 2rem; overflow: visible;
+  }
+  .bar-gauge-optimal {
+    position: absolute; left: -5px; right: -5px;
+    border: 2px solid var(--target-green); border-radius: 3px;
+    pointer-events: none; z-index: 20;
+    box-shadow: 0 0 8px rgba(29,185,84,0.5);
+  }
+  .bar-gauge-inner { width: 100%; height: 100%; position: relative; overflow: hidden; background: var(--bg); z-index: 10; }
+  .bar-gauge-scanlines { position: absolute; inset: 0; opacity: 0.3; }
+  .bar-gauge-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 0.5s ease-out; }
+
+  /* CHARTS */
+  .chart-area { flex-grow: 1; position: relative; margin-top: 1rem; min-height: 150px; display: flex; flex-direction: column; }
+  .chart-wrapper { display: flex; width: 100%; flex-grow: 1; position: relative; font-size: 1rem; padding: 0 3.5rem; }
+  .chart-axis-left, .chart-axis-right {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 0.25rem 0; position: absolute; height: 100%; width: 3rem; opacity: 0.9;
+  }
+  .chart-axis-left { left: 0; text-align: right; padding-right: 0.5rem; }
+  .chart-axis-right { right: 0; text-align: left; padding-left: 0.5rem; }
+  .chart-axis-left span, .chart-axis-right span { line-height: 1; }
+  .chart-svg-wrap {
+    position: relative;
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    border-left: 2px solid rgba(255,255,255,0.4);
+    border-right: 2px solid rgba(255,255,255,0.4);
+    flex-grow: 1; min-height: 120px;
+    background: rgba(0,0,0,0.15);
+  }
+  .chart-svg-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+  /* DUAL OVERLAY CHART */
+  .dual-chart { display: flex; flex-direction: column; width: 100%; height: 100%; font-size: 1rem; }
+  .dual-chart-header { display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 0.5rem; }
+  .dual-chart-header span { opacity: 0.8; font-size: 1.1rem; color: white; text-transform: uppercase; letter-spacing: 0.05em; }
+  .dual-chart-body { display: flex; flex-grow: 1; width: 100%; position: relative; }
+
+  .dual-axis-group { display: flex; align-items: center; height: 100%; padding-bottom: 1.5rem; }
+  .dual-axis-label-wrap { width: 1.5rem; display: flex; align-items: center; justify-content: center; overflow: visible; position: relative; }
+  .dual-axis-label-left { position: absolute; transform: rotate(-90deg); white-space: nowrap; letter-spacing: 0.1em; opacity: 0.9; font-size: 1rem; margin-right: 2rem; }
+  .dual-axis-label-right { position: absolute; transform: rotate(90deg); white-space: nowrap; letter-spacing: 0.1em; opacity: 0.9; font-size: 1rem; margin-left: 2rem; }
+  .dual-axis-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 0.25rem 0; width: 2.5rem; font-size: 1rem; }
+  .dual-axis-ticks.left { text-align: right; }
+  .dual-axis-ticks.right { text-align: left; }
+  .dual-tick { display: flex; align-items: center; gap: 0.4rem; }
+  .dual-tick.left { justify-content: flex-end; }
+  .tick-dash { width: 0.5rem; height: 2px; background: rgba(255,255,255,0.5); }
+
+  .dual-chart-center { flex-grow: 1; display: flex; flex-direction: column; position: relative; padding: 0 0.5rem; }
+  .dual-chart-svg-wrap {
+    position: relative;
+    border-bottom: 2px solid #4b5563;
+    border-left: 2px solid #4b5563;
+    border-right: 2px solid #4b5563;
+    flex-grow: 1;
+    background: rgba(0,0,0,0.2);
+  }
+  .dual-chart-svg-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .dual-time-label { height: 1.5rem; display: flex; align-items: flex-end; justify-content: center; font-size: 1rem; color: #9ca3af; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem; }
+
+  /* COMMAND PANEL */
+  .cmd-body { display: flex; gap: 2rem; justify-content: space-between; font-size: 1.2rem; color: var(--yellow); align-items: stretch; }
+  .cmd-log { flex-grow: 1; opacity: 0.9; font-family: 'VT323', monospace; line-height: 1.5; min-height: 4.5rem; }
+  .cmd-log .awaiting { animation: pulse 1.5s ease-in-out infinite; color: var(--white); margin-top: 0.5rem; }
+  .cmd-input-area {
+    border-left: 2px dashed rgba(255,204,0,0.3);
+    padding-left: 2rem; display: flex; align-items: center; min-width: 250px;
+    font-size: 1.4rem;
+  }
+  .cursor-blink { width: 0.85rem; height: 1.4rem; background: #facc15; animation: pulse 1s ease-in-out infinite; display: inline-block; margin-left: 0.25rem; }
+
+  .panel-footer { font-size: 1.1rem; text-align: left; margin-top: 0.5rem; opacity: 0.7; flex-shrink: 0; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 1024px) {
+    .top-row { grid-template-columns: 1fr; }
+    .dual-chart { min-height: 300px; }
+  }
+
+  @media (max-width: 768px) {
+    :root { --font-base: 16px; } /* Slightly scale down purely base font for tiny screens, but layout stays large */
+    .monitor-inner { padding: 1rem; gap: 1.5rem; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .header-controls { align-items: flex-start; width: 100%; flex-direction: row-reverse; justify-content: space-between; }
+    .stations-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .cmd-body { flex-direction: column; gap: 1rem; }
+    .cmd-input-area { border-left: none; border-top: 2px dashed rgba(255,204,0,0.3); padding-left: 0; padding-top: 1rem; }
+    .gauge-wrap { width: 9rem; height: 9rem; }
+    .bar-gauge-outer { height: 7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="monitor-frame">
+  <div class="monitor-inner">
+
+    <div class="header">
+      <h1>HYDRO-LAB MONITOR <span>v2.0</span></h1>
+      <div class="header-controls">
+        <div class="time-btns">
+          <button class="time-btn active" data-range="10m">10 MIN</button>
+          <button class="time-btn" data-range="1d">1 DAY</button>
+          <button class="time-btn" data-range="1w">1 WEEK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="top-row">
+      <div class="ambient-section">
+        <h2>AMBIENT CONDITIONS</h2>
+        <div class="gauges-row">
+          <div class="gauge-container">
+            <div class="gauge-wrap">
+              <svg id="dial-temp" viewBox="0 0 100 100"></svg>
+              <div class="gauge-value" style="color:var(--yellow)"><span id="val-ambient-temp">--</span></div>
+            </div>
+            <span class="gauge-label" style="color:var(--yellow)">LAB TEMP °F</span>
+          </div>
+          <div class="gauge-container">
+            <div class="gauge-wrap">
+              <div id="bar-hum-wrap" class="bar-gauge-outer" style="border-color:rgba(0,255,255,0.27)">
+                <div id="bar-hum-optimal" class="bar-gauge-optimal"></div>
+                <div class="bar-gauge-inner">
+                  <div id="bar-hum-scanlines" class="bar-gauge-scanlines"></div>
+                  <div id="bar-hum-fill" class="bar-gauge-fill" style="height:0%;background:var(--cyan)"></div>
+                </div>
+              </div>
+              <div class="gauge-value" style="color:var(--cyan)"><span id="val-ambient-hum">--</span></div>
+            </div>
+            <span class="gauge-label" style="color:var(--cyan)">LAB HUM %</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dual-chart">
+        <div class="dual-chart-header"><span>Telemetry Monitor</span></div>
+        <div class="dual-chart-body">
+          <div class="dual-axis-group">
+            <div class="dual-axis-label-wrap"><span class="dual-axis-label-left" style="color:var(--yellow)">TEMP (°F)</span></div>
+            <div class="dual-axis-ticks left" id="dual-left-ticks" style="color:var(--yellow)"></div>
+          </div>
+          <div class="dual-chart-center">
+            <div class="dual-chart-svg-wrap">
+              <svg id="dual-chart-svg" viewBox="0 0 400 150" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="dual-time-label" id="dual-time-label">PAST 10 MINUTES (T-10M → NOW)</div>
+          </div>
+          <div class="dual-axis-group">
+            <div class="dual-axis-ticks right" id="dual-right-ticks" style="color:var(--cyan)"></div>
+            <div class="dual-axis-label-wrap"><span class="dual-axis-label-right" style="color:var(--cyan)">HUMIDITY (%)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stations-grid">
+
+      <div class="station-panel" style="border-color:var(--green)">
+        <div class="station-label" style="color:var(--green);border-color:var(--green)">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+          HYDRO STATION 01
+        </div>
+        <div class="station-body">
+          <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%">
+            <div class="mini-bar-row" style="color:var(--yellow)">
+              <span class="mini-bar-label">WATER TEMP:</span>
+              <div class="mini-bar-track" id="mb-watertemp"></div>
+              <span class="mini-bar-value" id="val-watertemp">--</span>
+            </div>
+            <div class="mini-bar-row" style="color:var(--white)">
+              <span class="mini-bar-label">PH LEVEL:</span>
+              <div class="mini-bar-track" id="mb-ph"></div>
+              <span class="mini-bar-value" id="val-ph">--</span>
+            </div>
+            <div class="mini-bar-row" style="color:var(--green)">
+              <span class="mini-bar-label">E.C. LEVEL:</span>
+              <div class="mini-bar-track" id="mb-ec"></div>
+              <span class="mini-bar-value" id="val-ec">--</span>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-wrapper">
+              <div class="chart-axis-left" id="hydro-chart-left" style="color:var(--yellow)"></div>
+              <div class="chart-svg-wrap"><svg id="hydro-chart-svg" viewBox="0 0 240 100" preserveAspectRatio="none"></svg></div>
+              <div class="chart-axis-right" id="hydro-chart-right" style="color:var(--white)"></div>
+            </div>
+          </div>
+          <div class="panel-footer" style="color:var(--green)">CALIBRATION: <span style="color:var(--white)">--</span></div>
+        </div>
+      </div>
+
+      <div class="station-panel" style="border-color:var(--cyan)">
+        <div class="station-label" style="color:var(--cyan);border-color:var(--cyan)">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M5 5l1.5 1.5"/><path d="M17.5 17.5L19 19"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M5 19l1.5-1.5"/><path d="M17.5 6.5L19 5"/></svg>
+          REPTILE HABITAT 01
+        </div>
+        <div class="station-body">
+          <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%">
+            <div class="mini-bar-row" style="color:var(--yellow)">
+              <span class="mini-bar-label">TERR. TEMP:</span>
+              <div class="mini-bar-track" id="mb-repttemp"></div>
+              <span class="mini-bar-value" id="val-repttemp">--</span>
+            </div>
+            <div class="mini-bar-row" style="color:var(--cyan)">
+              <span class="mini-bar-label">TERR. HUM:</span>
+              <div class="mini-bar-track" id="mb-repthum"></div>
+              <span class="mini-bar-value" id="val-repthum">--</span>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-wrapper">
+              <div class="chart-axis-left" id="rept-chart-left" style="color:var(--yellow)"></div>
+              <div class="chart-svg-wrap"><svg id="rept-chart-svg" viewBox="0 0 240 100" preserveAspectRatio="none"></svg></div>
+              <div class="chart-axis-right" id="rept-chart-right" style="color:var(--cyan)"></div>
+            </div>
+          </div>
+          <div class="panel-footer" style="color:var(--cyan)">REMINDER: <span style="color:var(--white)">FEED TUESDAYS</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="station-panel" style="border-color:var(--yellow); margin-top: 1rem;">
+      <div class="station-label" style="color:var(--yellow);border-color:var(--yellow)">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        SYSTEM COMMAND
+      </div>
+      <div class="station-body">
+        <div class="cmd-body">
+          <div class="cmd-log" id="cmd-log">
+            <div class="awaiting">Awaiting input...</div>
+          </div>
+          <div class="cmd-input-area" style="flex-direction: column; align-items: flex-start; justify-content: center; gap: 1rem;">
+            <div class="status">STATUS: <span>ONLINE</span></div>
+            <div style="display: flex; align-items: center;">
+              <span>COMMAND_&gt;</span>
+              <span class="cursor-blink"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const COLORS = { yellow: '#ffcc00', green: '#39ff14', cyan: '#00ffff', white: '#ffffff', targetGreen: '#1db954' };
+
+  const OPTIMAL = {
+    ambientTemp: { min: 70, max: 90 },
+    ambientHum:  { min: 60, max: 70 },
+    hydroTemp:   { min: 67.0, max: 71.0 },
+    hydroPh:     { min: 5.6, max: 6.4 },
+    hydroEc:     { min: 1.6, max: 2.2 },
+    reptileTemp: { min: 86.0, max: 94.0 },
+    reptileHum:  { min: 68.0, max: 76.0 },
+  };
+
+  let currentRange = '10m';
+
+  // ── Time range buttons ──
+  document.querySelectorAll('.time-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentRange = btn.dataset.range;
+      document.getElementById('dual-time-label').textContent = getTimeLabel();
+      renderAllCharts();
+    });
+  });
+
+  function getTimeLabel() {
+    if (currentRange === '1d') return 'PAST 24 HOURS (T-24H \u2192 NOW)';
+    if (currentRange === '1w') return 'PAST 7 DAYS (T-7D \u2192 NOW)';
+    return 'PAST 10 MINUTES (T-10M \u2192 NOW)';
+  }
+  function getVDivisions() {
+    if (currentRange === '1d') return 24;
+    if (currentRange === '1w') return 7;
+    return 10;
+  }
+
+  // ── Data store (empty — no fake data) ──
+  const data = {
+    ambient: { temp: null, hum: null },
+    hydro:   { waterTemp: null, ph: null, ec: null },
+    reptile: { temp: null, hum: null },
+    history: {
+      roomTemp: [], roomHum: [],
+      waterTemp: [], ph: [],
+      reptileTemp: [], reptileHum: [],
+    }
+  };
+
+  /**
+   * PUBLIC API — push real telemetry readings from your sensors.
+   */
+  window.HydroLab = {
+    push: function(reading) {
+      if (reading.ambient) {
+        if (reading.ambient.temp != null) { data.ambient.temp = reading.ambient.temp; data.history.roomTemp.push(reading.ambient.temp); }
+        if (reading.ambient.hum != null)  { data.ambient.hum = reading.ambient.hum; data.history.roomHum.push(reading.ambient.hum); }
+      }
+      if (reading.hydro) {
+        if (reading.hydro.waterTemp != null) { data.hydro.waterTemp = reading.hydro.waterTemp; data.history.waterTemp.push(reading.hydro.waterTemp); }
+        if (reading.hydro.ph != null)        { data.hydro.ph = reading.hydro.ph; data.history.ph.push(reading.hydro.ph); }
+        if (reading.hydro.ec != null)        { data.hydro.ec = reading.hydro.ec; }
+      }
+      if (reading.reptile) {
+        if (reading.reptile.temp != null) { data.reptile.temp = reading.reptile.temp; data.history.reptileTemp.push(reading.reptile.temp); }
+        if (reading.reptile.hum != null)  { data.reptile.hum = reading.reptile.hum; data.history.reptileHum.push(reading.reptile.hum); }
+      }
+      Object.keys(data.history).forEach(k => { if (data.history[k].length > 200) data.history[k] = data.history[k].slice(-200); });
+      renderAll();
+    },
+
+    log: function(msg) {
+      var log = document.getElementById('cmd-log');
+      var ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+      var div = document.createElement('div');
+      div.textContent = '[' + ts + '] ' + msg;
+      var awaiting = log.querySelector('.awaiting');
+      if (awaiting) log.insertBefore(div, awaiting); else log.appendChild(div);
+      var lines = log.querySelectorAll('div:not(.awaiting)');
+      if (lines.length > 10) lines[0].remove();
+    },
+
+    getData: function() { return JSON.parse(JSON.stringify(data)); }
+  };
+
+  // ── Rendering helpers ──
+  function fmt(v, d) { return v != null ? v.toFixed(d) : '--'; }
+
+  function renderDialGauge(svgId, value, min, max, optMin, optMax, color) {
+    var svg = document.getElementById(svgId);
+    if (!svg) return;
+    var sweep = 270, start = 135, tR = 32;
+    var pct = value != null ? Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)) : 0;
+    var tC = 2 * Math.PI * tR, tA = (sweep / 360) * tC;
+    var dOff = tA - (pct / 100) * tA;
+    var nA = start + (pct / 100) * sweep;
+    var oSP = (optMin - min) / (max - min), oEP = (optMax - min) / (max - min);
+    var oR = tR + 4.5, oC = 2 * Math.PI * oR, oArc = (sweep / 360) * oC;
+    var oDA = ((oEP - oSP) * oArc) + ' ' + oC;
+    var oDO = -(oSP * oArc);
+
+    var ticks = '';
+    for (var i = 0; i < 28; i++) {
+      var a = start + (i / 27) * sweep, r = a * Math.PI / 180;
+      var maj = i % 3 === 0, iR = maj ? 38 : 42, ouR = 46;
+      ticks += '<line x1="'+(50+ouR*Math.cos(r))+'" y1="'+(50+ouR*Math.sin(r))+'" x2="'+(50+iR*Math.cos(r))+'" y2="'+(50+iR*Math.sin(r))+'" stroke="'+color+'" stroke-width="1.5" stroke-opacity="'+(maj?0.9:0.4)+'"/>';
+    }
+
+    svg.innerHTML =
+      '<circle cx="50" cy="50" r="46" stroke="'+color+'" stroke-width="1.5" fill="none" stroke-opacity="0.6" stroke-dasharray="'+((sweep/360)*2*Math.PI*46)+' '+(2*Math.PI*46)+'" transform="rotate('+start+' 50 50)"/>' +
+      ticks +
+      '<circle cx="50" cy="50" r="'+tR+'" stroke="'+color+'" stroke-width="8" fill="none" stroke-opacity="0.15" stroke-dasharray="'+tA+' '+tC+'" transform="rotate('+start+' 50 50)"/>' +
+      '<circle cx="50" cy="50" r="'+oR+'" stroke="'+COLORS.targetGreen+'" stroke-width="5" fill="none" stroke-opacity="0.8" stroke-dasharray="'+oDA+'" stroke-dashoffset="'+oDO+'" transform="rotate('+start+' 50 50)"/>' +
+      '<circle cx="50" cy="50" r="'+tR+'" stroke="'+color+'" stroke-width="8" fill="none" stroke-dasharray="'+tA+' '+tC+'" stroke-dashoffset="'+dOff+'" transform="rotate('+start+' 50 50)"/>' +
+      '<g style="transform:rotate('+nA+'deg);transform-origin:50px 50px;transition:transform 0.5s ease-out">' +
+        '<polygon points="45,50 50,46 86,50 50,54" fill="'+color+'"/>' +
+        '<circle cx="50" cy="50" r="5" fill="#10101e" stroke="'+color+'" stroke-width="1.5"/>' +
+      '</g>';
+  }
+
+  function renderBarGauge(value, min, max, optMin, optMax, color) {
+    var pct = value != null ? Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)) : 0;
+    var oB = ((optMin - min) / (max - min)) * 100, oH = ((optMax - optMin) / (max - min)) * 100;
+    document.getElementById('bar-hum-fill').style.height = pct + '%';
+    var opt = document.getElementById('bar-hum-optimal');
+    opt.style.bottom = oB + '%'; opt.style.height = oH + '%';
+    document.getElementById('bar-hum-scanlines').style.backgroundImage =
+      'repeating-linear-gradient(to bottom, transparent, transparent 2px, '+color+' 2px, '+color+' 4px)';
+  }
+
+  function renderMiniBar(id, value, min, max, optMin, optMax, color) {
+    var el = document.getElementById(id); if (!el) return;
+    var pct = value != null ? Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)) : 0;
+    var oL = ((optMin - min) / (max - min)) * 100, oW = ((optMax - optMin) / (max - min)) * 100;
+    el.innerHTML =
+      '<div class="mini-bar-optimal" style="left:'+oL+'%;width:'+oW+'%"></div>' +
+      '<div class="mini-bar-optimal-border" style="left:'+oL+'%;width:'+oW+'%"></div>' +
+      '<div class="mini-bar-fill-wrap"><div class="mini-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';
+  }
+
+  function makePath(arr, w, h, min, max) {
+    if (!arr || arr.length < 2) return null;
+    var range = max - min;
+    var pts = arr.map(function(v, i) { return { x: (i / (arr.length - 1)) * w, y: h - ((v - min) / range) * h }; });
+    var line = 'M ' + pts.map(function(p) { return p.x + ',' + p.y; }).join(' L ');
+    return { line: line, area: line + ' L ' + w + ',' + h + ' L 0,' + h + ' Z' };
+  }
+
+  function gridLines(w, h, vDiv) {
+    var s = '';
+    for (var i = 0; i <= vDiv; i++) s += '<line x1="'+((w/vDiv)*i)+'" y1="0" x2="'+((w/vDiv)*i)+'" y2="'+h+'" stroke="#fff" stroke-opacity="0.05"/>';
+    for (var j = 0; j < 6; j++) s += '<line x1="0" y1="'+((h/5)*j)+'" x2="'+w+'" y2="'+((h/5)*j)+'" stroke="#fff" stroke-opacity="0.05"/>';
+    return s;
+  }
+
+  function axisLabels(id, min, max, count) {
+    var el = document.getElementById(id); if (!el) return;
+    var dec = max < 10 ? 1 : 0, range = max - min, html = '';
+    for (var i = 0; i < count; i++) html += '<span style="line-height:1">' + (max - (range * i / (count - 1))).toFixed(dec) + '</span>';
+    el.innerHTML = html;
+  }
+
+  function renderDualChart() {
+    var svg = document.getElementById('dual-chart-svg');
+    var w = 400, h = 150, vDiv = getVDivisions();
+    var min1 = 60, max1 = 100, min2 = 55, max2 = 75;
+
+    // Axis ticks
+    function ticksHTML(min, max, side) {
+      var vals = [max, Math.round(min+(max-min)*0.75), Math.round(min+(max-min)*0.5), Math.round(min+(max-min)*0.25), min];
+      return vals.map(function(v) {
+        if (side === 'left') return '<div class="dual-tick left"><span>'+v+'</span><div class="tick-dash"></div></div>';
+        return '<div class="dual-tick"><div class="tick-dash"></div><span>'+v+'</span></div>';
+      }).join('');
+    }
+    document.getElementById('dual-left-ticks').innerHTML = ticksHTML(min1, max1, 'left');
+    document.getElementById('dual-right-ticks').innerHTML = ticksHTML(min2, max2, 'right');
+
+    var c = '';
+    for (var i = 0; i <= vDiv; i++) c += '<line x1="'+((w/vDiv)*i)+'" y1="0" x2="'+((w/vDiv)*i)+'" y2="'+h+'" stroke="#fff" stroke-opacity="0.07"/>';
+    for (var j = 0; j < 5; j++) c += '<line x1="0" y1="'+((h/4)*j)+'" x2="'+w+'" y2="'+((h/4)*j)+'" stroke="#fff" stroke-opacity="0.07"/>';
+
+    c += '<rect x="0" y="'+(h*0.25)+'" width="'+w+'" height="'+(h*0.5)+'" fill="rgba(29,185,84,0.05)"/>';
+    c += '<line x1="0" y1="'+(h*0.25)+'" x2="'+w+'" y2="'+(h*0.25)+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
+    c += '<line x1="0" y1="'+(h*0.75)+'" x2="'+w+'" y2="'+(h*0.75)+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
+    c += '<text x="5" y="'+(h*0.25-6)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">90\u00b0F / 70%</text>';
+    c += '<text x="5" y="'+(h*0.75+16)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">70\u00b0F / 60%</text>';
+
+    var p2 = makePath(data.history.roomHum, w, h, min2, max2);
+    if (p2) { c += '<path d="'+p2.area+'" fill="'+COLORS.cyan+'" fill-opacity="0.05"/>'; c += '<path d="'+p2.line+'" fill="none" stroke="'+COLORS.cyan+'" stroke-width="2.5" stroke-opacity="0.8"/>'; }
+    var p1 = makePath(data.history.roomTemp, w, h, min1, max1);
+    if (p1) { c += '<path d="'+p1.area+'" fill="'+COLORS.yellow+'" fill-opacity="0.05"/>'; c += '<path d="'+p1.line+'" fill="none" stroke="'+COLORS.yellow+'" stroke-width="2.5" stroke-opacity="1"/>'; }
+
+    svg.innerHTML = c;
+  }
+
+  function renderSmallChart(svgId, leftId, rightId, ds1, ds2) {
+    var svg = document.getElementById(svgId);
+    var w = 240, h = 100, vDiv = getVDivisions();
+    axisLabels(leftId, ds1.min, ds1.max, 5);
+    axisLabels(rightId, ds2.min, ds2.max, 5);
+    var c = gridLines(w, h, vDiv);
+    [ds1, ds2].forEach(function(ds) {
+      var p = makePath(ds.data, w, h, ds.min, ds.max);
+      if (p) { c += '<path d="'+p.area+'" fill="'+ds.color+'" fill-opacity="0.05"/>'; c += '<path d="'+p.line+'" fill="none" stroke="'+ds.color+'" stroke-width="2" stroke-opacity="0.8"/>'; }
+    });
+    svg.innerHTML = c;
+  }
+
+  function renderAllCharts() {
+    renderDualChart();
+    renderSmallChart('hydro-chart-svg', 'hydro-chart-left', 'hydro-chart-right',
+      { data: data.history.waterTemp, color: COLORS.yellow, min: 64, max: 76 },
+      { data: data.history.ph, color: COLORS.white, min: 5.0, max: 7.0 });
+    renderSmallChart('rept-chart-svg', 'rept-chart-left', 'rept-chart-right',
+      { data: data.history.reptileTemp, color: COLORS.yellow, min: 80, max: 100 },
+      { data: data.history.reptileHum, color: COLORS.cyan, min: 60, max: 80 });
+  }
+
+  function renderAll() {
+    document.getElementById('val-ambient-temp').textContent = fmt(data.ambient.temp, 1);
+    document.getElementById('val-ambient-hum').textContent = fmt(data.ambient.hum, 1);
+    renderDialGauge('dial-temp', data.ambient.temp, 60, 100, OPTIMAL.ambientTemp.min, OPTIMAL.ambientTemp.max, COLORS.yellow);
+    renderBarGauge(data.ambient.hum, 40, 90, OPTIMAL.ambientHum.min, OPTIMAL.ambientHum.max, COLORS.cyan);
+
+    document.getElementById('val-watertemp').textContent = fmt(data.hydro.waterTemp, 1);
+    document.getElementById('val-ph').textContent = fmt(data.hydro.ph, 2);
+    document.getElementById('val-ec').textContent = fmt(data.hydro.ec, 2);
+    renderMiniBar('mb-watertemp', data.hydro.waterTemp, 64, 76, OPTIMAL.hydroTemp.min, OPTIMAL.hydroTemp.max, COLORS.yellow);
+    renderMiniBar('mb-ph', data.hydro.ph, 5.0, 7.0, OPTIMAL.hydroPh.min, OPTIMAL.hydroPh.max, COLORS.white);
+    renderMiniBar('mb-ec', data.hydro.ec, 1.0, 3.0, OPTIMAL.hydroEc.min, OPTIMAL.hydroEc.max, COLORS.green);
+
+    document.getElementById('val-repttemp').textContent = fmt(data.reptile.temp, 1);
+    document.getElementById('val-repthum').textContent = fmt(data.reptile.hum, 1);
+    renderMiniBar('mb-repttemp', data.reptile.temp, 80, 100, OPTIMAL.reptileTemp.min, OPTIMAL.reptileTemp.max, COLORS.yellow);
+    renderMiniBar('mb-repthum', data.reptile.hum, 60, 80, OPTIMAL.reptileHum.min, OPTIMAL.reptileHum.max, COLORS.cyan);
+
+    renderAllCharts();
+  }
+
+  // Initial render (empty/waiting state)
+  renderAll();
+
+  // Ensure charts re-render nicely on window resize
+  window.addEventListener('resize', renderAllCharts);
+
+  // ── LIVE MQTT CONNECTION LOGIC ──
+  const MQTT_URL = 'wss://5891ec2abd8c46ccae0bf7e388a62da7.s1.eu.hivemq.cloud:8884/mqtt'; 
+  const options = {
+      username: 'hydro_dashboard_viewer',
+      password: 'Viewer123',
+      clientId: 'web_dashboard_' + Math.random().toString(16).substr(2, 8)
+  };
+
+  const client = mqtt.connect(MQTT_URL, options);
+
+  client.on('connect', () => {
+      window.HydroLab.log('SYSTEM: MQTT BROKER CONNECTED');
+      client.subscribe('hydro/telemetry');
+  });
+
+  client.on('message', (topic, message) => {
+      try {
+          const sensorData = JSON.parse(message.toString());
+          window.HydroLab.push(sensorData);
+          window.HydroLab.log('TELEMETRY: SYNC COMPLETE');
+      } catch (err) {
+          window.HydroLab.log('ERROR: DATA PARSE FAILED');
+      }
+  });
+
+})();
+</script>
+</body>
+</html>
