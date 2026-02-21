@@ -18,12 +18,10 @@
     --white: #ffffff;
     --orange: #ff8c00;
     --target-green: #1db954;
-    --font-base: 20px; /* Increased base font size */
+    --font-base: 20px;
   }
 
-  html {
-    font-size: var(--font-base);
-  }
+  html { font-size: var(--font-base); }
 
   body {
     background: var(--bg);
@@ -36,7 +34,6 @@
     overflow-x: hidden;
   }
 
-  /* Full screen dashboard mode */
   .monitor-frame {
     width: 100%;
     flex-grow: 1;
@@ -45,114 +42,68 @@
     background: var(--bg);
     position: relative;
   }
-  
-  .monitor-inner { 
-    padding: 2rem; 
-    display: flex; 
-    flex-direction: column; 
-    flex-grow: 1;
-    gap: 2rem; 
-    position: relative; 
-    z-index: 10; 
-  }
+  .monitor-inner { padding: 2rem; display: flex; flex-direction: column; flex-grow: 1; gap: 2rem; position: relative; z-index: 10; }
 
-  /* HEADER */
   .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--yellow); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem; }
   .header h1 { font-size: 3rem; color: var(--yellow); line-height: 0.8; }
   .header h1 span { font-size: 1.5rem; margin-left: 0.5rem; opacity: 0.8; }
-  
   .header-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
   .status { font-size: 1.2rem; color: var(--yellow); letter-spacing: 0.05em; }
   .status span { animation: pulse 1.5s ease-in-out infinite; font-weight: bold; }
 
   .time-btns { display: flex; gap: 0.5rem; }
   .time-btn {
-    padding: 0.25rem 1rem;
-    border: 2px solid var(--yellow);
-    border-radius: 0.375rem;
-    font-size: 1rem;
-    font-weight: bold;
-    font-family: 'VT323', monospace;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: transparent;
-    color: var(--yellow);
-    transition: all 0.15s;
+    padding: 0.25rem 1rem; border: 2px solid var(--yellow); border-radius: 0.375rem;
+    font-size: 1rem; font-weight: bold; font-family: 'VT323', monospace;
+    text-transform: uppercase; cursor: pointer; background: transparent;
+    color: var(--yellow); transition: all 0.15s;
   }
   .time-btn:hover { background: rgba(255, 204, 0, 0.2); }
   .time-btn.active { background: var(--yellow); color: var(--bg); }
 
-  /* TOP ROW */
   .top-row { display: grid; grid-template-columns: 1fr 2.5fr; gap: 2rem; min-height: 18rem; }
   .ambient-section { display: flex; flex-direction: column; }
   .ambient-section h2 { font-size: 1.25rem; color: var(--yellow); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
   .gauges-row { display: flex; justify-content: space-around; align-items: center; flex-grow: 1; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
 
-  /* STATION PANEL */
   .stations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; flex-grow: 1; }
-  
+
   .station-panel {
-    border: 2px solid;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    border-radius: 0.5rem;
-    position: relative;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+    border-radius: 0.5rem; position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5); background: rgba(0, 0, 0, 0.1);
   }
   .station-label {
-    position: absolute;
-    top: -1.1rem;
-    left: 1.5rem;
-    padding: 0.15rem 1rem;
-    font-size: 1.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--bg);
-    border: 2px solid;
-    border-radius: 0.375rem;
-    font-weight: bold;
+    position: absolute; top: -1.1rem; left: 1.5rem; padding: 0.15rem 1rem;
+    font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--bg); border: 2px solid; border-radius: 0.375rem; font-weight: bold;
   }
   .station-body { margin-top: 0.5rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; }
 
-  /* MINI BAR */
   .mini-bar-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; }
   .mini-bar-label { width: 8rem; flex-shrink: 0; }
   .mini-bar-value { width: 4.5rem; text-align: right; font-weight: bold; }
   .mini-bar-track {
-    flex-grow: 1;
-    margin: 0 1rem;
-    height: 1.25rem;
-    background: #0a0a14;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 9999px;
-    position: relative;
-    overflow: visible;
-    align-self: center;
+    flex-grow: 1; margin: 0 1rem; height: 1.25rem; background: #0a0a14;
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 9999px;
+    position: relative; overflow: visible; align-self: center;
   }
   .mini-bar-optimal { position: absolute; height: 100%; background: rgba(29,185,84,0.1); pointer-events: none; border-radius: 2px; z-index: 1; }
   .mini-bar-optimal-border {
     position: absolute; top: -4px; bottom: -4px;
-    border: 2px solid var(--target-green);
-    border-radius: 4px; pointer-events: none; z-index: 20;
+    border: 2px solid var(--target-green); border-radius: 4px; pointer-events: none; z-index: 20;
     box-shadow: 0 0 6px rgba(29,185,84,0.4); background: transparent;
   }
   .mini-bar-fill-wrap { position: absolute; inset: 0; overflow: hidden; border-radius: 9999px; z-index: 0; }
   .mini-bar-fill { height: 100%; transition: width 0.5s; }
 
-  /* GAUGE */
   .gauge-container { display: flex; flex-direction: column; align-items: center; }
   .gauge-wrap { position: relative; width: 11rem; height: 11rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .gauge-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
   .gauge-value { position: absolute; bottom: 0.5rem; display: flex; flex-direction: column; align-items: center; font-size: 2.25rem; font-weight: bold; line-height: 1; }
   .gauge-label { font-size: 1.1rem; margin-top: 0.5rem; font-weight: bold; letter-spacing: 0.05em; }
 
-  /* BAR GAUGE */
   .bar-gauge-outer {
     position: relative; width: 4.5rem; height: 8.5rem;
     border: 2px solid; border-radius: 3px; padding: 4px;
@@ -161,14 +112,12 @@
   .bar-gauge-optimal {
     position: absolute; left: -5px; right: -5px;
     border: 2px solid var(--target-green); border-radius: 3px;
-    pointer-events: none; z-index: 20;
-    box-shadow: 0 0 8px rgba(29,185,84,0.5);
+    pointer-events: none; z-index: 20; box-shadow: 0 0 8px rgba(29,185,84,0.5);
   }
   .bar-gauge-inner { width: 100%; height: 100%; position: relative; overflow: hidden; background: var(--bg); z-index: 10; }
   .bar-gauge-scanlines { position: absolute; inset: 0; opacity: 0.3; }
   .bar-gauge-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 0.5s ease-out; }
 
-  /* CHARTS */
   .chart-area { flex-grow: 1; position: relative; margin-top: 1rem; min-height: 150px; display: flex; flex-direction: column; }
   .chart-wrapper { display: flex; width: 100%; flex-grow: 1; position: relative; font-size: 1rem; padding: 0 3.5rem; }
   .chart-axis-left, .chart-axis-right {
@@ -183,12 +132,10 @@
     border-bottom: 2px solid rgba(255,255,255,0.4);
     border-left: 2px solid rgba(255,255,255,0.4);
     border-right: 2px solid rgba(255,255,255,0.4);
-    flex-grow: 1; min-height: 120px;
-    background: rgba(0,0,0,0.15);
+    flex-grow: 1; min-height: 120px; background: rgba(0,0,0,0.15);
   }
   .chart-svg-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 
-  /* DUAL OVERLAY CHART */
   .dual-chart { display: flex; flex-direction: column; width: 100%; height: 100%; font-size: 1rem; }
   .dual-chart-header { display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 0.5rem; }
   .dual-chart-header span { opacity: 0.8; font-size: 1.1rem; color: white; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -207,24 +154,25 @@
 
   .dual-chart-center { flex-grow: 1; display: flex; flex-direction: column; position: relative; padding: 0 0.5rem; }
   .dual-chart-svg-wrap {
-    position: relative;
-    border-bottom: 2px solid #4b5563;
-    border-left: 2px solid #4b5563;
-    border-right: 2px solid #4b5563;
-    flex-grow: 1;
-    background: rgba(0,0,0,0.2);
+    position: relative; border-bottom: 2px solid #4b5563;
+    border-left: 2px solid #4b5563; border-right: 2px solid #4b5563;
+    flex-grow: 1; background: rgba(0,0,0,0.2);
   }
   .dual-chart-svg-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .dual-time-label { height: 1.5rem; display: flex; align-items: flex-end; justify-content: center; font-size: 1rem; color: #9ca3af; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem; }
 
-  /* COMMAND PANEL */
   .cmd-body { display: flex; gap: 2rem; justify-content: space-between; font-size: 1.2rem; color: var(--yellow); align-items: stretch; }
-  .cmd-log { flex-grow: 1; opacity: 0.9; font-family: 'VT323', monospace; line-height: 1.5; min-height: 4.5rem; }
+  .cmd-log {
+    flex-grow: 1; opacity: 0.9; font-family: 'VT323', monospace; line-height: 1.5;
+    height: 6em; /* ~4 lines at 1.5 line-height */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
   .cmd-log .awaiting { animation: pulse 1.5s ease-in-out infinite; color: var(--white); margin-top: 0.5rem; }
   .cmd-input-area {
     border-left: 2px dashed rgba(255,204,0,0.3);
-    padding-left: 2rem; display: flex; align-items: center; min-width: 250px;
-    font-size: 1.4rem;
+    padding-left: 2rem; display: flex; align-items: center; min-width: 250px; font-size: 1.4rem;
   }
   .cursor-blink { width: 0.85rem; height: 1.4rem; background: #facc15; animation: pulse 1s ease-in-out infinite; display: inline-block; margin-left: 0.25rem; }
 
@@ -235,14 +183,13 @@
     50% { opacity: 0.3; }
   }
 
-  /* Responsive Breakpoints */
   @media (max-width: 1024px) {
     .top-row { grid-template-columns: 1fr; }
     .dual-chart { min-height: 300px; }
   }
 
   @media (max-width: 768px) {
-    :root { --font-base: 16px; } /* Slightly scale down purely base font for tiny screens, but layout stays large */
+    :root { --font-base: 16px; }
     .monitor-inner { padding: 1rem; gap: 1.5rem; }
     .header { flex-direction: column; align-items: flex-start; }
     .header-controls { align-items: flex-start; width: 100%; flex-direction: row-reverse; justify-content: space-between; }
@@ -426,7 +373,6 @@
 
   let currentRange = '10m';
 
-  // ── Time range buttons ──
   document.querySelectorAll('.time-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -448,7 +394,71 @@
     return 10;
   }
 
-  // ── Data store (empty — no fake data) ──
+  // ── Auto-range helper ──
+  // Computes a nice axis range that fits all data AND the optimal band,
+  // with padding so lines never hug the edges.
+  function autoRange(dataArr, optMin, optMax, fallbackMin, fallbackMax) {
+    var lo = Infinity, hi = -Infinity;
+
+    // Include data points
+    if (dataArr && dataArr.length > 0) {
+      for (var i = 0; i < dataArr.length; i++) {
+        if (dataArr[i] < lo) lo = dataArr[i];
+        if (dataArr[i] > hi) hi = dataArr[i];
+      }
+    }
+
+    // Include optimal band so it's always visible
+    if (optMin != null && optMin < lo) lo = optMin;
+    if (optMax != null && optMax > hi) hi = optMax;
+
+    // If we still have no data, use fallback
+    if (!isFinite(lo) || !isFinite(hi)) return { min: fallbackMin, max: fallbackMax };
+
+    // Add 15% padding on each side (minimum 1 unit so flat data still looks good)
+    var span = hi - lo;
+    var pad = Math.max(span * 0.15, 0.5);
+    lo = lo - pad;
+    hi = hi + pad;
+
+    // Round to nice numbers
+    var step = niceStep((hi - lo) / 5);
+    lo = Math.floor(lo / step) * step;
+    hi = Math.ceil(hi / step) * step;
+
+    // Ensure at least a small range
+    if (hi - lo < step) hi = lo + step;
+
+    return { min: parseFloat(lo.toFixed(4)), max: parseFloat(hi.toFixed(4)) };
+  }
+
+  function niceStep(raw) {
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var frac = raw / mag;
+    if (frac <= 1) return mag;
+    if (frac <= 2) return 2 * mag;
+    if (frac <= 5) return 5 * mag;
+    return 10 * mag;
+  }
+
+  // Also auto-range for a single current value + optimal band (for gauges)
+  function gaugeRange(value, optMin, optMax, fallbackMin, fallbackMax) {
+    var lo = optMin, hi = optMax;
+    if (value != null) {
+      if (value < lo) lo = value;
+      if (value > hi) hi = value;
+    }
+    if (!isFinite(lo) || !isFinite(hi)) return { min: fallbackMin, max: fallbackMax };
+    var span = hi - lo;
+    var pad = Math.max(span * 0.25, 2);
+    lo = lo - pad;
+    hi = hi + pad;
+    var step = niceStep((hi - lo) / 5);
+    lo = Math.floor(lo / step) * step;
+    hi = Math.ceil(hi / step) * step;
+    return { min: lo, max: hi };
+  }
+
   const data = {
     ambient: { temp: null, hum: null },
     hydro:   { waterTemp: null, ph: null, ec: null },
@@ -460,9 +470,6 @@
     }
   };
 
-  /**
-   * PUBLIC API — push real telemetry readings from your sensors.
-   */
   window.HydroLab = {
     push: function(reading) {
       if (reading.ambient) {
@@ -488,15 +495,18 @@
       var div = document.createElement('div');
       div.textContent = '[' + ts + '] ' + msg;
       var awaiting = log.querySelector('.awaiting');
-      if (awaiting) log.insertBefore(div, awaiting); else log.appendChild(div);
-      var lines = log.querySelectorAll('div:not(.awaiting)');
-      if (lines.length > 10) lines[0].remove();
+      if (awaiting) awaiting.remove();
+      log.appendChild(div);
+      // Keep only last 4 lines
+      var lines = log.querySelectorAll('div');
+      while (lines.length > 4) { lines[0].remove(); lines = log.querySelectorAll('div'); }
+      // Auto-scroll to bottom
+      log.scrollTop = log.scrollHeight;
     },
 
     getData: function() { return JSON.parse(JSON.stringify(data)); }
   };
 
-  // ── Rendering helpers ──
   function fmt(v, d) { return v != null ? v.toFixed(d) : '--'; }
 
   function renderDialGauge(svgId, value, min, max, optMin, optMax, color) {
@@ -507,7 +517,7 @@
     var tC = 2 * Math.PI * tR, tA = (sweep / 360) * tC;
     var dOff = tA - (pct / 100) * tA;
     var nA = start + (pct / 100) * sweep;
-    var oSP = (optMin - min) / (max - min), oEP = (optMax - min) / (max - min);
+    var oSP = Math.max(0, (optMin - min) / (max - min)), oEP = Math.min(1, (optMax - min) / (max - min));
     var oR = tR + 4.5, oC = 2 * Math.PI * oR, oArc = (sweep / 360) * oC;
     var oDA = ((oEP - oSP) * oArc) + ' ' + oC;
     var oDO = -(oSP * oArc);
@@ -533,7 +543,8 @@
 
   function renderBarGauge(value, min, max, optMin, optMax, color) {
     var pct = value != null ? Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)) : 0;
-    var oB = ((optMin - min) / (max - min)) * 100, oH = ((optMax - optMin) / (max - min)) * 100;
+    var oB = Math.max(0, ((optMin - min) / (max - min)) * 100);
+    var oH = Math.min(100 - oB, ((optMax - optMin) / (max - min)) * 100);
     document.getElementById('bar-hum-fill').style.height = pct + '%';
     var opt = document.getElementById('bar-hum-optimal');
     opt.style.bottom = oB + '%'; opt.style.height = oH + '%';
@@ -544,7 +555,8 @@
   function renderMiniBar(id, value, min, max, optMin, optMax, color) {
     var el = document.getElementById(id); if (!el) return;
     var pct = value != null ? Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)) : 0;
-    var oL = ((optMin - min) / (max - min)) * 100, oW = ((optMax - optMin) / (max - min)) * 100;
+    var oL = Math.max(0, ((optMin - min) / (max - min)) * 100);
+    var oW = Math.min(100 - oL, ((optMax - optMin) / (max - min)) * 100);
     el.innerHTML =
       '<div class="mini-bar-optimal" style="left:'+oL+'%;width:'+oW+'%"></div>' +
       '<div class="mini-bar-optimal-border" style="left:'+oL+'%;width:'+oW+'%"></div>' +
@@ -554,6 +566,7 @@
   function makePath(arr, w, h, min, max) {
     if (!arr || arr.length < 2) return null;
     var range = max - min;
+    if (range === 0) range = 1; // prevent division by zero
     var pts = arr.map(function(v, i) { return { x: (i / (arr.length - 1)) * w, y: h - ((v - min) / range) * h }; });
     var line = 'M ' + pts.map(function(p) { return p.x + ',' + p.y; }).join(' L ');
     return { line: line, area: line + ' L ' + w + ',' + h + ' L 0,' + h + ' Z' };
@@ -568,7 +581,9 @@
 
   function axisLabels(id, min, max, count) {
     var el = document.getElementById(id); if (!el) return;
-    var dec = max < 10 ? 1 : 0, range = max - min, html = '';
+    var range = max - min;
+    var dec = range < 5 ? 1 : 0;
+    var html = '';
     for (var i = 0; i < count; i++) html += '<span style="line-height:1">' + (max - (range * i / (count - 1))).toFixed(dec) + '</span>';
     el.innerHTML = html;
   }
@@ -576,11 +591,28 @@
   function renderDualChart() {
     var svg = document.getElementById('dual-chart-svg');
     var w = 400, h = 150, vDiv = getVDivisions();
-    var min1 = 60, max1 = 100, min2 = 55, max2 = 75;
 
-    // Axis ticks
+    // Auto-range both axes from data + optimal bands
+    var r1 = autoRange(data.history.roomTemp, OPTIMAL.ambientTemp.min, OPTIMAL.ambientTemp.max, 60, 100);
+    var r2 = autoRange(data.history.roomHum, OPTIMAL.ambientHum.min, OPTIMAL.ambientHum.max, 55, 75);
+    var min1 = r1.min, max1 = r1.max, min2 = r2.min, max2 = r2.max;
+
+    // Compute optimal band positions in chart-space (0..1 from bottom)
+    var optTempBot = (OPTIMAL.ambientTemp.min - min1) / (max1 - min1);
+    var optTempTop = (OPTIMAL.ambientTemp.max - min1) / (max1 - min1);
+    var optHumBot  = (OPTIMAL.ambientHum.min - min2) / (max2 - min2);
+    var optHumTop  = (OPTIMAL.ambientHum.max - min2) / (max2 - min2);
+
+    // Use the wider visible band (union of both optimal ranges in pixel-space)
+    var bandTop = Math.min(1 - optTempTop, 1 - optHumTop);
+    var bandBot = Math.max(1 - optTempBot, 1 - optHumBot);
+
     function ticksHTML(min, max, side) {
-      var vals = [max, Math.round(min+(max-min)*0.75), Math.round(min+(max-min)*0.5), Math.round(min+(max-min)*0.25), min];
+      var count = 5;
+      var range = max - min;
+      var dec = range < 5 ? 1 : 0;
+      var vals = [];
+      for (var i = 0; i < count; i++) vals.push((max - (range * i / (count - 1))).toFixed(dec));
       return vals.map(function(v) {
         if (side === 'left') return '<div class="dual-tick left"><span>'+v+'</span><div class="tick-dash"></div></div>';
         return '<div class="dual-tick"><div class="tick-dash"></div><span>'+v+'</span></div>';
@@ -593,11 +625,17 @@
     for (var i = 0; i <= vDiv; i++) c += '<line x1="'+((w/vDiv)*i)+'" y1="0" x2="'+((w/vDiv)*i)+'" y2="'+h+'" stroke="#fff" stroke-opacity="0.07"/>';
     for (var j = 0; j < 5; j++) c += '<line x1="0" y1="'+((h/4)*j)+'" x2="'+w+'" y2="'+((h/4)*j)+'" stroke="#fff" stroke-opacity="0.07"/>';
 
-    c += '<rect x="0" y="'+(h*0.25)+'" width="'+w+'" height="'+(h*0.5)+'" fill="rgba(29,185,84,0.05)"/>';
-    c += '<line x1="0" y1="'+(h*0.25)+'" x2="'+w+'" y2="'+(h*0.25)+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
-    c += '<line x1="0" y1="'+(h*0.75)+'" x2="'+w+'" y2="'+(h*0.75)+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
-    c += '<text x="5" y="'+(h*0.25-6)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">90\u00b0F / 70%</text>';
-    c += '<text x="5" y="'+(h*0.75+16)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">70\u00b0F / 60%</text>';
+    // Optimal band shading (union of both optimal zones)
+    var bandY1 = bandTop * h, bandY2 = bandBot * h;
+    c += '<rect x="0" y="'+bandY1+'" width="'+w+'" height="'+(bandY2 - bandY1)+'" fill="rgba(29,185,84,0.05)"/>';
+    c += '<line x1="0" y1="'+bandY1+'" x2="'+w+'" y2="'+bandY1+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
+    c += '<line x1="0" y1="'+bandY2+'" x2="'+w+'" y2="'+bandY2+'" stroke="#1db954" stroke-opacity="0.4" stroke-dasharray="4,4"/>';
+
+    // Labels for the optimal band lines
+    var topTempLabel = OPTIMAL.ambientTemp.max.toFixed(0) + '\u00b0F / ' + OPTIMAL.ambientHum.max.toFixed(0) + '%';
+    var botTempLabel = OPTIMAL.ambientTemp.min.toFixed(0) + '\u00b0F / ' + OPTIMAL.ambientHum.min.toFixed(0) + '%';
+    c += '<text x="5" y="'+(bandY1 - 4)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">'+topTempLabel+'</text>';
+    c += '<text x="5" y="'+(bandY2 + 16)+'" fill="#1db954" opacity="1" font-size="14" font-family="VT323,monospace">'+botTempLabel+'</text>';
 
     var p2 = makePath(data.history.roomHum, w, h, min2, max2);
     if (p2) { c += '<path d="'+p2.area+'" fill="'+COLORS.cyan+'" fill-opacity="0.05"/>'; c += '<path d="'+p2.line+'" fill="none" stroke="'+COLORS.cyan+'" stroke-width="2.5" stroke-opacity="0.8"/>'; }
@@ -622,43 +660,58 @@
 
   function renderAllCharts() {
     renderDualChart();
+
+    // Auto-range the small charts too
+    var hrWT = autoRange(data.history.waterTemp, OPTIMAL.hydroTemp.min, OPTIMAL.hydroTemp.max, 64, 76);
+    var hrPH = autoRange(data.history.ph, OPTIMAL.hydroPh.min, OPTIMAL.hydroPh.max, 5.0, 7.0);
     renderSmallChart('hydro-chart-svg', 'hydro-chart-left', 'hydro-chart-right',
-      { data: data.history.waterTemp, color: COLORS.yellow, min: 64, max: 76 },
-      { data: data.history.ph, color: COLORS.white, min: 5.0, max: 7.0 });
+      { data: data.history.waterTemp, color: COLORS.yellow, min: hrWT.min, max: hrWT.max },
+      { data: data.history.ph, color: COLORS.white, min: hrPH.min, max: hrPH.max });
+
+    var hrRT = autoRange(data.history.reptileTemp, OPTIMAL.reptileTemp.min, OPTIMAL.reptileTemp.max, 80, 100);
+    var hrRH = autoRange(data.history.reptileHum, OPTIMAL.reptileHum.min, OPTIMAL.reptileHum.max, 60, 80);
     renderSmallChart('rept-chart-svg', 'rept-chart-left', 'rept-chart-right',
-      { data: data.history.reptileTemp, color: COLORS.yellow, min: 80, max: 100 },
-      { data: data.history.reptileHum, color: COLORS.cyan, min: 60, max: 80 });
+      { data: data.history.reptileTemp, color: COLORS.yellow, min: hrRT.min, max: hrRT.max },
+      { data: data.history.reptileHum, color: COLORS.cyan, min: hrRH.min, max: hrRH.max });
   }
 
   function renderAll() {
+    // Auto-range the dial gauge for ambient temp
+    var dialR = gaugeRange(data.ambient.temp, OPTIMAL.ambientTemp.min, OPTIMAL.ambientTemp.max, 60, 100);
     document.getElementById('val-ambient-temp').textContent = fmt(data.ambient.temp, 1);
     document.getElementById('val-ambient-hum').textContent = fmt(data.ambient.hum, 1);
-    renderDialGauge('dial-temp', data.ambient.temp, 60, 100, OPTIMAL.ambientTemp.min, OPTIMAL.ambientTemp.max, COLORS.yellow);
-    renderBarGauge(data.ambient.hum, 40, 90, OPTIMAL.ambientHum.min, OPTIMAL.ambientHum.max, COLORS.cyan);
+    renderDialGauge('dial-temp', data.ambient.temp, dialR.min, dialR.max, OPTIMAL.ambientTemp.min, OPTIMAL.ambientTemp.max, COLORS.yellow);
 
+    // Auto-range the bar gauge for ambient humidity
+    var barR = gaugeRange(data.ambient.hum, OPTIMAL.ambientHum.min, OPTIMAL.ambientHum.max, 40, 90);
+    renderBarGauge(data.ambient.hum, barR.min, barR.max, OPTIMAL.ambientHum.min, OPTIMAL.ambientHum.max, COLORS.cyan);
+
+    // Auto-range the mini bars
+    var mbWT = gaugeRange(data.hydro.waterTemp, OPTIMAL.hydroTemp.min, OPTIMAL.hydroTemp.max, 64, 76);
+    var mbPH = gaugeRange(data.hydro.ph, OPTIMAL.hydroPh.min, OPTIMAL.hydroPh.max, 5.0, 7.0);
+    var mbEC = gaugeRange(data.hydro.ec, OPTIMAL.hydroEc.min, OPTIMAL.hydroEc.max, 1.0, 3.0);
     document.getElementById('val-watertemp').textContent = fmt(data.hydro.waterTemp, 1);
     document.getElementById('val-ph').textContent = fmt(data.hydro.ph, 2);
     document.getElementById('val-ec').textContent = fmt(data.hydro.ec, 2);
-    renderMiniBar('mb-watertemp', data.hydro.waterTemp, 64, 76, OPTIMAL.hydroTemp.min, OPTIMAL.hydroTemp.max, COLORS.yellow);
-    renderMiniBar('mb-ph', data.hydro.ph, 5.0, 7.0, OPTIMAL.hydroPh.min, OPTIMAL.hydroPh.max, COLORS.white);
-    renderMiniBar('mb-ec', data.hydro.ec, 1.0, 3.0, OPTIMAL.hydroEc.min, OPTIMAL.hydroEc.max, COLORS.green);
+    renderMiniBar('mb-watertemp', data.hydro.waterTemp, mbWT.min, mbWT.max, OPTIMAL.hydroTemp.min, OPTIMAL.hydroTemp.max, COLORS.yellow);
+    renderMiniBar('mb-ph', data.hydro.ph, mbPH.min, mbPH.max, OPTIMAL.hydroPh.min, OPTIMAL.hydroPh.max, COLORS.white);
+    renderMiniBar('mb-ec', data.hydro.ec, mbEC.min, mbEC.max, OPTIMAL.hydroEc.min, OPTIMAL.hydroEc.max, COLORS.green);
 
+    var mbRTR = gaugeRange(data.reptile.temp, OPTIMAL.reptileTemp.min, OPTIMAL.reptileTemp.max, 80, 100);
+    var mbRHR = gaugeRange(data.reptile.hum, OPTIMAL.reptileHum.min, OPTIMAL.reptileHum.max, 60, 80);
     document.getElementById('val-repttemp').textContent = fmt(data.reptile.temp, 1);
     document.getElementById('val-repthum').textContent = fmt(data.reptile.hum, 1);
-    renderMiniBar('mb-repttemp', data.reptile.temp, 80, 100, OPTIMAL.reptileTemp.min, OPTIMAL.reptileTemp.max, COLORS.yellow);
-    renderMiniBar('mb-repthum', data.reptile.hum, 60, 80, OPTIMAL.reptileHum.min, OPTIMAL.reptileHum.max, COLORS.cyan);
+    renderMiniBar('mb-repttemp', data.reptile.temp, mbRTR.min, mbRTR.max, OPTIMAL.reptileTemp.min, OPTIMAL.reptileTemp.max, COLORS.yellow);
+    renderMiniBar('mb-repthum', data.reptile.hum, mbRHR.min, mbRHR.max, OPTIMAL.reptileHum.min, OPTIMAL.reptileHum.max, COLORS.cyan);
 
     renderAllCharts();
   }
 
-  // Initial render (empty/waiting state)
   renderAll();
-
-  // Ensure charts re-render nicely on window resize
   window.addEventListener('resize', renderAllCharts);
 
   // ── LIVE MQTT CONNECTION LOGIC ──
-  const MQTT_URL = 'wss://5891ec2abd8c46ccae0bf7e388a62da7.s1.eu.hivemq.cloud:8884/mqtt'; 
+  const MQTT_URL = 'wss://5891ec2abd8c46ccae0bf7e388a62da7.s1.eu.hivemq.cloud:8884/mqtt';
   const options = {
       username: 'hydro_dashboard_viewer',
       password: 'Viewer123',
