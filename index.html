@@ -10,14 +10,29 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #10101e;
-    --yellow: #ffcc00;
-    --green: #39ff14;
-    --pink: #ff00ff;
-    --cyan: #00ffff;
-    --white: #ffffff;
-    --orange: #ff8c00;
+    --bg: #0a0a0f;
+    
+    /* Ambient - Yellow/Orange family */
+    --amber-bright: #ffcc00;
+    --amber-mid: #e6a800;
+    --amber-dim: #997000;
+    --orange-bright: #ff9933;
+    --orange-mid: #cc7a29;
+    
+    /* Hydro - Green family */
+    --green-bright: #39ff14;
+    --green-mid: #2eb82e;
+    --green-dim: #1a801a;
+    --teal-bright: #00e6ac;
+    --teal-mid: #00b386;
+    --mint: #66ffb3;
+    
+    /* Utility */
+    --white: #f0f0f0;
+    --gray: #888888;
+    --red-warning: #ff4444;
     --target-green: #1db954;
+    
     --font-base: 18px;
   }
 
@@ -42,35 +57,59 @@
     background: var(--bg);
     position: relative;
   }
-  .monitor-inner { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; gap: 1.5rem; position: relative; z-index: 10; }
+  .monitor-inner { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; gap: 1.25rem; position: relative; z-index: 10; }
 
-  .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--yellow); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem; }
-  .header h1 { font-size: 2.5rem; color: var(--yellow); line-height: 0.8; }
-  .header h1 span { font-size: 1.25rem; margin-left: 0.5rem; opacity: 0.8; }
-  .status { font-size: 1.2rem; color: var(--yellow); letter-spacing: 0.05em; }
+  .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--amber-bright); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
+  .header h1 { font-size: 2.2rem; color: var(--amber-bright); line-height: 0.8; }
+  .header h1 span { font-size: 1.1rem; margin-left: 0.5rem; opacity: 0.8; }
+  .status { font-size: 1.1rem; color: var(--amber-bright); letter-spacing: 0.05em; }
   .status span { animation: pulse 1.5s ease-in-out infinite; font-weight: bold; }
 
   .section-title {
-    font-size: 1.5rem;
-    color: var(--yellow);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px dashed rgba(255,204,0,0.3);
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px dashed;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .section-title.ambient {
+    color: var(--amber-bright);
+    border-color: rgba(255, 204, 0, 0.3);
+  }
+  
+  .section-title.hydro {
+    color: var(--green-bright);
+    border-color: rgba(57, 255, 20, 0.3);
   }
 
-  .stations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .stations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
 
   .sensor-card {
     border: 2px solid;
-    padding: 1.25rem;
+    padding: 1rem;
     border-radius: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .sensor-card.ambient {
+    border-color: var(--amber-mid);
+    box-shadow: inset 0 0 30px rgba(255, 204, 0, 0.03);
+  }
+  
+  .sensor-card.hydro {
+    border-color: var(--green-mid);
+    box-shadow: inset 0 0 30px rgba(57, 255, 20, 0.03);
+  }
+  
+  .sensor-card.disabled {
+    border-color: #444;
+    opacity: 0.5;
   }
 
   .sensor-header {
@@ -80,24 +119,24 @@
   }
 
   .sensor-name {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .sensor-value {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: bold;
     text-align: center;
-    padding: 0.5rem 0;
+    padding: 0.25rem 0;
   }
 
   .sensor-bar {
-    height: 1.5rem;
-    background: #0a0a14;
-    border: 1px solid rgba(255,255,255,0.2);
+    height: 1.25rem;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 9999px;
     position: relative;
     overflow: hidden;
@@ -119,20 +158,58 @@
     box-shadow: 0 0 8px rgba(29,185,84,0.5);
   }
 
+  /* Mini Charts */
+  .mini-chart {
+    height: 40px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .mini-chart svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mini-chart-label {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 0.7rem;
+    opacity: 0.5;
+  }
+
   .sensor-description {
-    font-size: 1rem;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.4;
-    padding: 0.75rem;
-    background: rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.3;
+    padding: 0.6rem;
+    background: rgba(255,255,255,0.03);
     border-radius: 0.375rem;
     border-left: 3px solid;
     text-transform: none;
   }
+  
+  .sensor-description.ambient {
+    border-color: var(--amber-dim);
+  }
+  
+  .sensor-description.hydro {
+    border-color: var(--green-dim);
+  }
 
   .sensor-description strong {
-    color: var(--yellow);
     text-transform: uppercase;
+  }
+  
+  .sensor-description.ambient strong {
+    color: var(--amber-bright);
+  }
+  
+  .sensor-description.hydro strong {
+    color: var(--green-bright);
   }
 
   .light-indicator {
@@ -140,12 +217,12 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .light-bulb {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     border: 3px solid;
     display: flex;
@@ -155,9 +232,9 @@
   }
 
   .light-bulb.bright {
-    background: radial-gradient(circle, var(--yellow) 0%, rgba(255,204,0,0.3) 70%);
-    border-color: var(--yellow);
-    box-shadow: 0 0 30px var(--yellow), 0 0 60px rgba(255,204,0,0.5);
+    background: radial-gradient(circle, var(--amber-bright) 0%, rgba(255,204,0,0.3) 70%);
+    border-color: var(--amber-bright);
+    box-shadow: 0 0 30px var(--amber-bright), 0 0 60px rgba(255,204,0,0.5);
   }
 
   .light-bulb.dark {
@@ -166,31 +243,116 @@
   }
 
   .light-status {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: bold;
   }
 
-  .calibration-panel {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 0.375rem;
-    padding: 1rem;
+  /* Warning Banner */
+  .warning-banner {
+    display: none;
+    background: rgba(255, 68, 68, 0.15);
+    border: 2px solid var(--red-warning);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    animation: warning-pulse 2s ease-in-out infinite;
+  }
+  
+  .warning-banner.visible {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .warning-icon {
+    font-size: 1.5rem;
+    color: var(--red-warning);
+    animation: shake 0.5s ease-in-out infinite;
+  }
+  
+  .warning-text {
+    color: var(--red-warning);
+    font-size: 1.2rem;
+  }
+  
+  .warning-text span {
+    color: var(--white);
+    font-size: 1rem;
+    display: block;
+    margin-top: 0.15rem;
+    opacity: 0.9;
+  }
+  
+  @keyframes warning-pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(255, 68, 68, 0.5); }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
   }
 
-  .calibration-title {
-    font-size: 1.1rem;
-    color: var(--cyan);
-    margin-bottom: 0.75rem;
+  /* Collapsible Sections */
+  .collapsible {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.375rem;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+  }
+  
+  .collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  
+  .collapsible-header:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  
+  .collapsible-title {
+    font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+  
+  .collapsible-toggle {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+  }
+  
+  .collapsible.collapsed .collapsible-toggle {
+    transform: rotate(-90deg);
+  }
+  
+  .collapsible-content {
+    padding: 0.6rem 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 500px;
+    opacity: 1;
+  }
+  
+  .collapsible.collapsed .collapsible-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    border-top: none;
+    overflow: hidden;
   }
 
   .calibration-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.25rem 0;
-    font-size: 1rem;
+    padding: 0.2rem 0;
+    font-size: 0.95rem;
     border-bottom: 1px dashed rgba(255,255,255,0.1);
   }
 
@@ -199,7 +361,7 @@
   }
 
   .calibration-label {
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.6);
   }
 
   .calibration-value {
@@ -207,65 +369,40 @@
     font-weight: bold;
   }
 
-  .cmd-panel {
-    border: 2px solid var(--yellow);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background: rgba(0,0,0,0.2);
-  }
-
-  .cmd-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .cmd-title {
-    font-size: 1.2rem;
-    color: var(--yellow);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
   .cmd-log {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--white);
     opacity: 0.9;
-    height: 4.5em;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
   }
 
   .cmd-log .awaiting {
     animation: pulse 1.5s ease-in-out infinite;
-    color: var(--cyan);
+    color: var(--teal-bright);
   }
 
   .fun-fact {
-    background: linear-gradient(135deg, rgba(57,255,20,0.1) 0%, rgba(0,255,255,0.1) 100%);
-    border: 2px solid var(--green);
+    background: linear-gradient(135deg, rgba(57,255,20,0.08) 0%, rgba(0,230,172,0.08) 100%);
+    border: 2px solid var(--green-mid);
     border-radius: 0.5rem;
-    padding: 1rem;
-    margin-top: 0.5rem;
+    padding: 0.75rem;
   }
 
   .fun-fact-title {
-    font-size: 1.2rem;
-    color: var(--green);
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--green-bright);
+    margin-bottom: 0.4rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
   .fun-fact-text {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--white);
-    line-height: 1.5;
+    line-height: 1.4;
     text-transform: none;
   }
 
@@ -282,7 +419,7 @@
   @media (max-width: 768px) {
     :root { --font-base: 16px; }
     .monitor-inner { padding: 1rem; gap: 1rem; }
-    .header h1 { font-size: 2rem; }
+    .header h1 { font-size: 1.8rem; }
     .sensor-value { font-size: 2rem; }
     .stations-grid { grid-template-columns: 1fr; }
   }
@@ -294,72 +431,89 @@
   <div class="monitor-inner">
 
     <div class="header">
-      <h1>🌱 HYDRO-LAB MONITOR <span>v2.0</span></h1>
+      <h1>🌱 HYDRO-LAB <span>v2.0</span></h1>
       <div class="status">STATUS: <span id="connection-status">CONNECTING...</span></div>
+    </div>
+
+    <!-- PROBE WARNING BANNER -->
+    <div class="warning-banner" id="probe-warning">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        PROBES OUT OF WATER!
+        <span>TDS and pH readings are zero — check that probes are submerged</span>
+      </div>
     </div>
 
     <!-- AMBIENT CONDITIONS -->
     <div>
-      <div class="section-title">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        AMBIENT CONDITIONS (The Air Around Us)
+      <div class="section-title ambient">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        AMBIENT
       </div>
       <div class="stations-grid">
 
         <!-- Temperature -->
-        <div class="sensor-card" style="border-color: var(--yellow)">
+        <div class="sensor-card ambient">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--yellow)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-              TEMPERATURE
+            <div class="sensor-name" style="color: var(--amber-bright)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              TEMP
             </div>
-            <span style="color: var(--yellow); opacity: 0.7">°F</span>
+            <span style="color: var(--amber-mid); opacity: 0.7">°F</span>
           </div>
-          <div class="sensor-value" style="color: var(--yellow)"><span id="val-temp">--</span>°F</div>
+          <div class="sensor-value" style="color: var(--amber-bright)"><span id="val-temp">--</span>°F</div>
           <div class="sensor-bar">
             <div class="sensor-bar-optimal" id="temp-optimal"></div>
-            <div class="sensor-bar-fill" id="temp-fill" style="background: var(--yellow)"></div>
+            <div class="sensor-bar-fill" id="temp-fill" style="background: linear-gradient(90deg, var(--amber-dim), var(--amber-bright))"></div>
           </div>
-          <div class="sensor-description" style="border-color: var(--yellow)">
-            <strong>🌡️ What is this?</strong> Temperature tells us how hot or cold the air is! Plants like it not too hot and not too cold — just like Goldilocks! Our plants grow best between <strong>70-90°F</strong>.
+          <div class="mini-chart">
+            <svg id="chart-temp" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+            <div class="mini-chart-label" style="color: var(--amber-mid)">HISTORY</div>
+          </div>
+          <div class="sensor-description ambient">
+            <strong>🌡️ What is this?</strong> Temperature tells us how hot or cold the air is! Plants grow best between <strong>70-90°F</strong>.
           </div>
         </div>
 
         <!-- Humidity -->
-        <div class="sensor-card" style="border-color: var(--cyan)">
+        <div class="sensor-card ambient">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--cyan)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            <div class="sensor-name" style="color: var(--orange-bright)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
               HUMIDITY
             </div>
-            <span style="color: var(--cyan); opacity: 0.7">%</span>
+            <span style="color: var(--orange-mid); opacity: 0.7">%</span>
           </div>
-          <div class="sensor-value" style="color: var(--cyan)"><span id="val-hum">--</span>%</div>
+          <div class="sensor-value" style="color: var(--orange-bright)"><span id="val-hum">--</span>%</div>
           <div class="sensor-bar">
             <div class="sensor-bar-optimal" id="hum-optimal"></div>
-            <div class="sensor-bar-fill" id="hum-fill" style="background: var(--cyan)"></div>
+            <div class="sensor-bar-fill" id="hum-fill" style="background: linear-gradient(90deg, var(--orange-mid), var(--orange-bright))"></div>
           </div>
-          <div class="sensor-description" style="border-color: var(--cyan)">
-            <strong>💧 What is this?</strong> Humidity measures how much water is floating invisibly in the air! When it's humid, the air feels sticky. Plants breathe through tiny holes in their leaves and like humidity between <strong>60-70%</strong>.
+          <div class="mini-chart">
+            <svg id="chart-hum" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+            <div class="mini-chart-label" style="color: var(--orange-mid)">HISTORY</div>
+          </div>
+          <div class="sensor-description ambient">
+            <strong>💧 What is this?</strong> Humidity measures water in the air! Plants like <strong>60-70%</strong>.
           </div>
         </div>
 
         <!-- Light -->
-        <div class="sensor-card" style="border-color: var(--orange)">
+        <div class="sensor-card ambient">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--orange)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <div class="sensor-name" style="color: var(--amber-bright)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
               GROW LIGHT
             </div>
           </div>
           <div class="light-indicator">
             <div class="light-bulb dark" id="light-bulb">
-              <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 18h6M10 22h4M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 18h6M10 22h4M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
             </div>
             <div class="light-status" id="val-light" style="color: #666">--</div>
           </div>
-          <div class="sensor-description" style="border-color: var(--orange)">
-            <strong>💡 What is this?</strong> This sensor checks if our grow lights are ON or OFF! Plants need light to make their food through a process called <strong>photosynthesis</strong> — they're like little solar-powered food factories!
+          <div class="sensor-description ambient">
+            <strong>💡 What is this?</strong> Checks if grow lights are ON! Plants use light to make food through <strong>photosynthesis</strong>.
           </div>
         </div>
 
@@ -368,105 +522,107 @@
 
     <!-- HYDRO STATION -->
     <div>
-      <div class="section-title" style="color: var(--green)">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
-        HYDRO STATION (The Plant's Water)
+      <div class="section-title hydro">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+        HYDRO STATION
       </div>
       <div class="stations-grid">
 
         <!-- pH Level -->
-        <div class="sensor-card" style="border-color: var(--pink)">
+        <div class="sensor-card hydro">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--pink)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M10 2v7.31M14 9.3V1.99M8.5 2h7M8 21h8M12 17v4"/><path d="M12 17a5 5 0 0 0 5-5c0-1.5-.5-3-2-4.5l-3-3-3 3c-1.5 1.5-2 3-2 4.5a5 5 0 0 0 5 5z"/></svg>
+            <div class="sensor-name" style="color: var(--teal-bright)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M10 2v7.31M14 9.3V1.99M8.5 2h7M8 21h8M12 17v4"/><path d="M12 17a5 5 0 0 0 5-5c0-1.5-.5-3-2-4.5l-3-3-3 3c-1.5 1.5-2 3-2 4.5a5 5 0 0 0 5 5z"/></svg>
               pH LEVEL
             </div>
-            <span style="color: var(--pink); opacity: 0.7">0-14</span>
+            <span style="color: var(--teal-mid); opacity: 0.7">0-14</span>
           </div>
-          <div class="sensor-value" style="color: var(--pink)"><span id="val-ph">--</span></div>
+          <div class="sensor-value" style="color: var(--teal-bright)"><span id="val-ph">--</span></div>
           <div class="sensor-bar">
             <div class="sensor-bar-optimal" id="ph-optimal"></div>
-            <div class="sensor-bar-fill" id="ph-fill" style="background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff)"></div>
+            <div class="sensor-bar-fill" id="ph-fill" style="background: linear-gradient(90deg, #ff6666, #66ff66, #6666ff)"></div>
           </div>
-          <div class="sensor-description" style="border-color: var(--pink)">
-            <strong>🧪 What is this?</strong> pH tells us if water is <strong>acidic</strong> (like lemon juice), <strong>neutral</strong> (like plain water), or <strong>basic</strong> (like soap). Plants like their water slightly acidic, between <strong>5.5-6.5</strong>. This helps them absorb nutrients!
+          <div class="mini-chart">
+            <svg id="chart-ph" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+            <div class="mini-chart-label" style="color: var(--teal-mid)">HISTORY</div>
+          </div>
+          <div class="sensor-description hydro">
+            <strong>🧪 What is this?</strong> pH tells us if water is acidic or basic. Plants like <strong>5.5-6.5</strong>.
           </div>
           
-          <!-- pH Calibration Panel -->
-          <div class="calibration-panel">
-            <div class="calibration-title">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              CALIBRATION DATA
+          <!-- pH Calibration - Collapsible -->
+          <div class="collapsible collapsed" id="calibration-panel">
+            <div class="collapsible-header" onclick="toggleCollapsible('calibration-panel')">
+              <div class="collapsible-title" style="color: var(--teal-bright)">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                CALIBRATION DATA
+              </div>
+              <div class="collapsible-toggle">▼</div>
             </div>
-            <div class="calibration-row">
-              <span class="calibration-label">Raw Voltage:</span>
-              <span class="calibration-value" id="ph-voltage">-- V</span>
-            </div>
-            <div class="calibration-row">
-              <span class="calibration-label">pH 7.0 Target:</span>
-              <span class="calibration-value">2.50 V</span>
-            </div>
-            <div class="calibration-row">
-              <span class="calibration-label">pH 4.0 Target:</span>
-              <span class="calibration-value">3.00 V</span>
-            </div>
-            <div class="calibration-row">
-              <span class="calibration-label">Status:</span>
-              <span class="calibration-value" id="ph-status" style="color: var(--green)">--</span>
+            <div class="collapsible-content">
+              <div class="calibration-row">
+                <span class="calibration-label">Raw Voltage:</span>
+                <span class="calibration-value" id="ph-voltage">-- V</span>
+              </div>
+              <div class="calibration-row">
+                <span class="calibration-label">pH 7.0 Target:</span>
+                <span class="calibration-value">2.50 V</span>
+              </div>
+              <div class="calibration-row">
+                <span class="calibration-label">pH 4.0 Target:</span>
+                <span class="calibration-value">3.00 V</span>
+              </div>
+              <div class="calibration-row">
+                <span class="calibration-label">Status:</span>
+                <span class="calibration-value" id="ph-status" style="color: var(--green-bright)">--</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- TDS -->
-        <div class="sensor-card" style="border-color: var(--green)">
+        <div class="sensor-card hydro">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--green)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v6M12 22v-6M4.93 10.93l4.24 4.24M14.83 8.83l4.24 4.24M2 18h6M22 18h-6M4.93 13.07l4.24-4.24M14.83 15.17l4.24-4.24"/></svg>
-              TDS (Total Dissolved Solids)
+            <div class="sensor-name" style="color: var(--green-bright)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v6M12 22v-6M4.93 10.93l4.24 4.24M14.83 8.83l4.24 4.24M2 18h6M22 18h-6M4.93 13.07l4.24-4.24M14.83 15.17l4.24-4.24"/></svg>
+              TDS
             </div>
-            <span style="color: var(--green); opacity: 0.7">PPM</span>
+            <span style="color: var(--green-mid); opacity: 0.7">PPM</span>
           </div>
-          <div class="sensor-value" style="color: var(--green)"><span id="val-tds">--</span> <span style="font-size: 1.2rem">ppm</span></div>
+          <div class="sensor-value" style="color: var(--green-bright)"><span id="val-tds">--</span> <span style="font-size: 1rem">ppm</span></div>
           <div class="sensor-bar">
             <div class="sensor-bar-optimal" id="tds-optimal"></div>
-            <div class="sensor-bar-fill" id="tds-fill" style="background: var(--green)"></div>
+            <div class="sensor-bar-fill" id="tds-fill" style="background: linear-gradient(90deg, var(--green-dim), var(--green-bright))"></div>
           </div>
-          <div class="sensor-description" style="border-color: var(--green)">
-            <strong>🔬 What is this?</strong> TDS measures tiny particles dissolved in water — like plant food! <strong>PPM</strong> means "parts per million." Imagine 1 million tiny water drops, and some of them are nutrients. Plants like <strong>800-1200 ppm</strong> of nutrients in their water!
+          <div class="mini-chart">
+            <svg id="chart-tds" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+            <div class="mini-chart-label" style="color: var(--green-mid)">HISTORY</div>
           </div>
-        </div>
-
-        <!-- Water Temperature -->
-        <div class="sensor-card" style="border-color: #666; opacity: 0.6">
-          <div class="sensor-header">
-            <div class="sensor-name" style="color: #888">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-              WATER TEMPERATURE
-            </div>
-            <span style="color: #666">°F</span>
-          </div>
-          <div class="sensor-value no-sensor" style="color: #666">NO SENSOR</div>
-          <div class="sensor-description" style="border-color: #666; opacity: 0.8">
-            <strong>🌊 Coming Soon!</strong> We'll add a waterproof thermometer to measure how warm the plant's water is. Plants like their water around <strong>65-75°F</strong> — not too cold like a swimming pool!
+          <div class="sensor-description hydro">
+            <strong>🔬 What is this?</strong> TDS measures nutrients dissolved in water. Plants like <strong>800-1200 ppm</strong>.
           </div>
         </div>
 
-        <!-- EC (calculated from TDS) -->
-        <div class="sensor-card" style="border-color: var(--cyan)">
+        <!-- EC -->
+        <div class="sensor-card hydro">
           <div class="sensor-header">
-            <div class="sensor-name" style="color: var(--cyan)">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-              EC (Electrical Conductivity)
+            <div class="sensor-name" style="color: var(--mint)">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              EC
             </div>
-            <span style="color: var(--cyan); opacity: 0.7">mS/cm</span>
+            <span style="color: var(--teal-mid); opacity: 0.7">mS/cm</span>
           </div>
-          <div class="sensor-value" style="color: var(--cyan)"><span id="val-ec">--</span> <span style="font-size: 1.2rem">mS/cm</span></div>
+          <div class="sensor-value" style="color: var(--mint)"><span id="val-ec">--</span> <span style="font-size: 1rem">mS/cm</span></div>
           <div class="sensor-bar">
             <div class="sensor-bar-optimal" id="ec-optimal"></div>
-            <div class="sensor-bar-fill" id="ec-fill" style="background: var(--cyan)"></div>
+            <div class="sensor-bar-fill" id="ec-fill" style="background: linear-gradient(90deg, var(--teal-mid), var(--mint))"></div>
           </div>
-          <div class="sensor-description" style="border-color: var(--cyan)">
-            <strong>⚡ What is this?</strong> EC measures how well electricity travels through water! Pure water doesn't conduct electricity well, but water with nutrients does. It's like TDS but measured differently. Plants like <strong>1.5-2.5 mS/cm</strong>.
+          <div class="mini-chart">
+            <svg id="chart-ec" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+            <div class="mini-chart-label" style="color: var(--teal-mid)">HISTORY</div>
+          </div>
+          <div class="sensor-description hydro">
+            <strong>⚡ What is this?</strong> EC measures how well water conducts electricity. Plants like <strong>1.5-2.5 mS/cm</strong>.
           </div>
         </div>
 
@@ -476,27 +632,27 @@
     <!-- Fun Fact -->
     <div class="fun-fact">
       <div class="fun-fact-title">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
         DID YOU KNOW?
       </div>
       <div class="fun-fact-text" id="fun-fact">
-        Hydroponic plants can grow up to 50% faster than plants in soil! That's because their roots can get nutrients directly from the water without having to search through dirt.
+        Hydroponic plants can grow up to 50% faster than plants in soil! That's because their roots can get nutrients directly from the water.
       </div>
     </div>
 
-    <!-- Command Log -->
-    <div class="cmd-panel">
-      <div class="cmd-header">
-        <div class="cmd-title">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+    <!-- System Log - Collapsible -->
+    <div class="collapsible collapsed" id="system-log">
+      <div class="collapsible-header" onclick="toggleCollapsible('system-log')">
+        <div class="collapsible-title" style="color: var(--amber-bright)">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
           SYSTEM LOG
         </div>
-        <div style="font-size: 0.9rem; color: var(--cyan)">
-          Updates every 5 seconds
-        </div>
+        <div class="collapsible-toggle">▼</div>
       </div>
-      <div class="cmd-log" id="cmd-log">
-        <div class="awaiting">Waiting for sensor data...</div>
+      <div class="collapsible-content">
+        <div class="cmd-log" id="cmd-log">
+          <div class="awaiting">Waiting for sensor data...</div>
+        </div>
       </div>
     </div>
 
@@ -523,17 +679,28 @@
     ec: { min: 0, max: 4 }
   };
 
+  // History arrays for charts
+  const history = {
+    temp: [],
+    hum: [],
+    ph: [],
+    tds: [],
+    ec: []
+  };
+  
+  const MAX_HISTORY = 100;
+
   const FUN_FACTS = [
-    "Hydroponic plants can grow up to 50% faster than plants in soil! That's because their roots can get nutrients directly from the water without having to search through dirt.",
+    "Hydroponic plants can grow up to 50% faster than plants in soil! That's because their roots can get nutrients directly from the water.",
     "The word 'hydroponics' comes from Greek words meaning 'water' and 'labor.' So it literally means 'water working!'",
     "NASA studies hydroponics to figure out how astronauts could grow food in space! 🚀",
     "Plants are about 90% water — that's why they need so much to drink!",
-    "The Hanging Gardens of Babylon, one of the Seven Wonders of the Ancient World, may have used an early form of hydroponics!",
-    "A single tomato plant can drink up to 2 gallons of water per day in hot weather!",
-    "Plants 'breathe' through tiny holes in their leaves called stomata. They take in carbon dioxide and release oxygen!",
-    "The biggest hydroponic farm in the world is in Kentucky and is bigger than 60 football fields!",
+    "The Hanging Gardens of Babylon may have used an early form of hydroponics!",
+    "A single tomato plant can drink up to 2 gallons of water per day!",
+    "Plants 'breathe' through tiny holes in their leaves called stomata!",
+    "The biggest hydroponic farm is bigger than 60 football fields!",
     "Plants can 'hear' water! Their roots grow toward the sound of running water.",
-    "Lettuce grown hydroponically uses 90% less water than lettuce grown in soil!"
+    "Lettuce grown hydroponically uses 90% less water than in soil!"
   ];
 
   let factIndex = 0;
@@ -545,11 +712,16 @@
 
   setInterval(rotateFunFact, 15000);
 
-  function renderBar(fillId, optimalId, value, range, optimal, color) {
+  // Collapsible toggle
+  window.toggleCollapsible = function(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+  };
+
+  function renderBar(fillId, optimalId, value, range, optimal) {
     const fill = document.getElementById(fillId);
     const opt = document.getElementById(optimalId);
     
-    if (value != null) {
+    if (value != null && !isNaN(value)) {
       const pct = Math.max(0, Math.min(100, ((value - range.min) / (range.max - range.min)) * 100));
       fill.style.width = pct + '%';
     } else {
@@ -562,28 +734,84 @@
     opt.style.width = optWidth + '%';
   }
 
+  function renderMiniChart(svgId, data, color, range) {
+    const svg = document.getElementById(svgId);
+    if (!svg || data.length < 2) {
+      svg.innerHTML = '<text x="50" y="25" text-anchor="middle" fill="#444" font-size="8" font-family="VT323">NO DATA YET</text>';
+      return;
+    }
+    
+    const w = 100, h = 40;
+    const padding = 2;
+    
+    // Auto-range based on data
+    let min = Math.min(...data);
+    let max = Math.max(...data);
+    
+    // Add some padding to range
+    const rangePadding = (max - min) * 0.1 || 1;
+    min -= rangePadding;
+    max += rangePadding;
+    
+    // Build path
+    const points = data.map((v, i) => {
+      const x = padding + (i / (data.length - 1)) * (w - padding * 2);
+      const y = h - padding - ((v - min) / (max - min)) * (h - padding * 2);
+      return `${x},${y}`;
+    });
+    
+    const linePath = 'M ' + points.join(' L ');
+    const areaPath = linePath + ` L ${w - padding},${h - padding} L ${padding},${h - padding} Z`;
+    
+    // Optimal zone
+    const optY1 = h - padding - ((OPTIMAL[svgId.replace('chart-', '')].max - min) / (max - min)) * (h - padding * 2);
+    const optY2 = h - padding - ((OPTIMAL[svgId.replace('chart-', '')].min - min) / (max - min)) * (h - padding * 2);
+    
+    svg.innerHTML = `
+      <rect x="${padding}" y="${Math.max(optY1, padding)}" width="${w - padding * 2}" height="${Math.min(optY2 - optY1, h - padding * 2)}" fill="#1db954" opacity="0.15"/>
+      <path d="${areaPath}" fill="${color}" opacity="0.1"/>
+      <path d="${linePath}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${points[points.length-1].split(',')[0]}" cy="${points[points.length-1].split(',')[1]}" r="2" fill="${color}"/>
+    `;
+  }
+
   function voltageToApproxPh(voltage) {
-    // Approximate pH from voltage: pH 7 = 2.5V, slope ~0.18V per pH unit
     if (voltage == null) return null;
     return 7.0 + ((2.5 - voltage) / 0.18);
   }
 
   function tdsToEc(tds) {
-    // Approximate conversion: EC (mS/cm) ≈ TDS (ppm) / 500
     if (tds == null) return null;
     return tds / 500;
+  }
+
+  function checkProbeWarning(tds) {
+    const warning = document.getElementById('probe-warning');
+    if (tds != null && tds <= 5) {
+      warning.classList.add('visible');
+    } else {
+      warning.classList.remove('visible');
+    }
   }
 
   function updateDisplay(data) {
     // Ambient
     if (data.ambient) {
       if (data.ambient.temp != null) {
-        document.getElementById('val-temp').textContent = data.ambient.temp.toFixed(1);
-        renderBar('temp-fill', 'temp-optimal', data.ambient.temp, RANGES.temp, OPTIMAL.temp);
+        const temp = data.ambient.temp;
+        document.getElementById('val-temp').textContent = temp.toFixed(1);
+        renderBar('temp-fill', 'temp-optimal', temp, RANGES.temp, OPTIMAL.temp);
+        history.temp.push(temp);
+        if (history.temp.length > MAX_HISTORY) history.temp.shift();
+        renderMiniChart('chart-temp', history.temp, '#ffcc00', RANGES.temp);
       }
       if (data.ambient.hum != null) {
-        document.getElementById('val-hum').textContent = data.ambient.hum.toFixed(1);
-        renderBar('hum-fill', 'hum-optimal', data.ambient.hum, RANGES.hum, OPTIMAL.hum);
+        const hum = data.ambient.hum;
+        document.getElementById('val-hum').textContent = hum.toFixed(1);
+        renderBar('hum-fill', 'hum-optimal', hum, RANGES.hum, OPTIMAL.hum);
+        history.hum.push(hum);
+        if (history.hum.length > MAX_HISTORY) history.hum.shift();
+        renderMiniChart('chart-hum', history.hum, '#ff9933', RANGES.hum);
       }
     }
 
@@ -595,13 +823,13 @@
       
       if (isLight) {
         bulb.className = 'light-bulb bright';
-        bulb.style.color = 'var(--yellow)';
-        status.textContent = 'BRIGHT ☀️';
-        status.style.color = 'var(--yellow)';
+        bulb.style.color = 'var(--amber-bright)';
+        status.textContent = 'ON ☀️';
+        status.style.color = 'var(--amber-bright)';
       } else {
         bulb.className = 'light-bulb dark';
         bulb.style.color = '#666';
-        status.textContent = 'DARK 🌙';
+        status.textContent = 'OFF 🌙';
         status.style.color = '#666';
       }
     }
@@ -616,18 +844,22 @@
         document.getElementById('ph-voltage').textContent = voltage.toFixed(3) + ' V';
         document.getElementById('val-ph').textContent = phValue.toFixed(2);
         renderBar('ph-fill', 'ph-optimal', phValue, RANGES.ph, OPTIMAL.ph);
+        
+        history.ph.push(phValue);
+        if (history.ph.length > MAX_HISTORY) history.ph.shift();
+        renderMiniChart('chart-ph', history.ph, '#00e6ac', RANGES.ph);
 
         // pH status
         const phStatus = document.getElementById('ph-status');
         if (phValue >= OPTIMAL.ph.min && phValue <= OPTIMAL.ph.max) {
           phStatus.textContent = 'OPTIMAL ✓';
-          phStatus.style.color = 'var(--green)';
+          phStatus.style.color = 'var(--green-bright)';
         } else if (phValue < OPTIMAL.ph.min) {
           phStatus.textContent = 'TOO ACIDIC ↓';
-          phStatus.style.color = 'var(--orange)';
+          phStatus.style.color = 'var(--orange-bright)';
         } else {
           phStatus.textContent = 'TOO BASIC ↑';
-          phStatus.style.color = 'var(--orange)';
+          phStatus.style.color = 'var(--orange-bright)';
         }
       }
 
@@ -638,9 +870,19 @@
         
         document.getElementById('val-tds').textContent = Math.round(tds);
         renderBar('tds-fill', 'tds-optimal', tds, RANGES.tds, OPTIMAL.tds);
+        
+        history.tds.push(tds);
+        if (history.tds.length > MAX_HISTORY) history.tds.shift();
+        renderMiniChart('chart-tds', history.tds, '#39ff14', RANGES.tds);
 
         document.getElementById('val-ec').textContent = ec.toFixed(2);
         renderBar('ec-fill', 'ec-optimal', ec, RANGES.ec, OPTIMAL.ec);
+        
+        history.ec.push(ec);
+        if (history.ec.length > MAX_HISTORY) history.ec.shift();
+        renderMiniChart('chart-ec', history.ec, '#66ffb3', RANGES.ec);
+        
+        checkProbeWarning(tds);
       }
     }
   }
@@ -656,14 +898,13 @@
     
     logEl.appendChild(div);
     
-    while (logEl.children.length > 4) {
+    while (logEl.children.length > 6) {
       logEl.firstChild.remove();
     }
     
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  // Expose for debugging
   window.HydroLab = {
     push: function(data) {
       updateDisplay(data);
@@ -683,14 +924,14 @@
 
   client.on('connect', () => {
     document.getElementById('connection-status').textContent = 'ONLINE';
-    document.getElementById('connection-status').style.color = 'var(--green)';
+    document.getElementById('connection-status').style.color = 'var(--green-bright)';
     log('SYSTEM: Connected to HiveMQ broker');
     client.subscribe('hydro/telemetry');
   });
 
   client.on('error', (err) => {
     document.getElementById('connection-status').textContent = 'ERROR';
-    document.getElementById('connection-status').style.color = 'var(--orange)';
+    document.getElementById('connection-status').style.color = 'var(--orange-bright)';
     log('ERROR: ' + err.message);
   });
 
